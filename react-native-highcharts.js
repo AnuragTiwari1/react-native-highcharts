@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import WebView from 'react-native-webview';
 
 
-const win = Dimensions.get('window');
 class ChartWeb extends Component {
     constructor(props){
         super(props);
@@ -15,11 +14,6 @@ class ChartWeb extends Component {
                     #container {
                         width:100%;
                         height:100%;
-                        top:0;
-                        left:0;
-                        right:0;
-                        bottom:0;
-                        position:absolute;
                         user-select: none;
                         -webkit-user-select: none;
                     }
@@ -46,19 +40,18 @@ class ChartWeb extends Component {
                         </div>
                     </body>
                 </html>`,
-            Wlayout:{
-                height:win.height,
-                width:win.width
-            }
+        }
+    }
+
+    componentDidUpdate(prevProps){
+        if(prevProps.config!==this.props.config){
+            this.reRenderWebView()
         }
     }
 
     // used to resize on orientation of display
     reRenderWebView(e) {
-        this.setState({
-            height: e.nativeEvent.layout.height,
-            width: e.nativeEvent.layout.width,
-        })
+       this.forceUpdate()
     }
 
     render() {
@@ -75,11 +68,12 @@ class ChartWeb extends Component {
               <WebView
                   onLayout={(e)=>this.reRenderWebView(e)}
                   style={styles.full}
-                  source={{ html: concatHTML, baseUrl: 'web/' }}
+                  source={{ html: concatHTML }}
                   javaScriptEnabled={true}
                   domStorageEnabled={true}
                   scalesPageToFit={true}
                   scrollEnabled={false}
+                  originWhitelist={['*']}
                   automaticallyAdjustContentInsets={true}
                   {...this.props}
               />
